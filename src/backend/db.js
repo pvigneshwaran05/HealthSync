@@ -9,7 +9,9 @@ const Patient = new Schema({
     address: String,
     dateOfBirth: Date,
     gender: String,
-    hospital: String,
+    medicalHistory: String,
+    bloodGroup: String,
+    hospital: [String],
     visitedDoctors: {type: Schema.Types.ObjectId, ref: 'Doctor'}
 })
 
@@ -19,6 +21,8 @@ const Doctor = new Schema({
     password: String,
     specialty: String,
     hospital: String,
+    phone: String,
+    experience: String,
     patients: [{type: Schema.Types.ObjectId, ref: 'Patient'}]
 })
 

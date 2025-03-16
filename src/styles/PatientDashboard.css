@@ -1,0 +1,37 @@
+.patient-dashboard {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.access-requests {
+  margin-top: 20px;
+}
+
+.access-requests ul {
+  list-style: none;
+  padding: 0;
+}
+
+.access-requests li {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.access-requests button {
+  margin-left: 10px;
+  padding: 5px;
+  cursor: pointer;
+  border: none;
+}
+
+.access-requests button:first-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.access-requests button:last-child {
+  background-color: #dc3545;
+  color: white;
+}
