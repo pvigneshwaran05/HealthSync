@@ -1,0 +1,35 @@
+.doctor-dashboard {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .request-access {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .request-access input {
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .request-access button {
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .patient-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: #e3f2fd;
+    border-radius: 10px;
+  }
+  
