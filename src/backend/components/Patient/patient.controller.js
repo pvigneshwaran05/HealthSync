@@ -1,3 +1,6 @@
+const {patientModel} = require('../../db')
+
+
 // Signup for Patients
 const patientSignup = async (req, res) => {
     const { name, email, password, phone, address, dateOfBirth, gender } = req.body;
@@ -18,6 +21,7 @@ const patientSignup = async (req, res) => {
 // Signin for Patients
 const patientSignin = async (req, res) => {
     const { email, password } = req.body;
+    
     
     try {
         const user = await patientModel.findOne({ email });
