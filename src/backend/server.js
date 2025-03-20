@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors')
-const {patientModel, doctorModel} = require('./db')
 const PORT = 8000;
 
 const app = express();
