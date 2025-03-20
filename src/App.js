@@ -5,11 +5,13 @@ import PatientDashboard from "./frontend/PatientDashboard"
 import DoctorLogin from "./frontend/DoctorLogin";
 import DoctorSignup from "./frontend/DoctorSignup";
 import DoctorDashboard from "./frontend/DoctorDashboard";
+import HomePage from "./frontend/HomePage";
 
 function App() {
     return (
         <Router>
             <Routes>
+                <Route path="/" element={<HomePage />} />
                 <Route path="/patient-signup" element={<PatientSignUp />} />
                 <Route path="/patient-login" element={<PatientLogin />} />
                 <Route path="/patient-dashboard" element={<PatientDashboard />} />
