@@ -20,17 +20,21 @@ export default function PatientLogin() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(credential);
+        
         try {
             const response = await axios.post("http://localhost:8000/patient/login", 
                 credential
             );
+            console.log(response);
             if (response.status === 200) {
+                localStorage.setItem("user", response.data.user);
+                console.log(localStorage.getItem("user"))
                 console.log(response);
                 navigate("/patient-dashboard")
             }
             
         } catch(e) {
+            console.log(e);
             alert(e.response.data.message);
             return;
         }
