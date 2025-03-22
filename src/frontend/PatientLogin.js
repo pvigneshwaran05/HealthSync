@@ -27,9 +27,7 @@ export default function PatientLogin() {
             );
             console.log(response);
             if (response.status === 200) {
-                localStorage.setItem("user", response.data.user);
-                console.log(localStorage.getItem("user"))
-                console.log(response);
+                sessionStorage.setItem("email", credential.email);
                 navigate("/patient-dashboard")
             }
             
