@@ -1,37 +1,752 @@
 .patient-dashboard {
-  background: white;
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  color: #334155;
+}
+
+/* Loading and Error States */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  background-color: #fee2e2;
+  color: #b91c1c;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  text-align: center;
+  margin: 100px auto;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.access-requests {
-  margin-top: 20px;
+/* Navigation */
+.dashboard-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 15px 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.access-requests ul {
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  font-size: 24px;
+}
+
+.logo h2 {
+  margin: 0;
+  color: #0284c7;
+  font-weight: 700;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.welcome-text {
+  font-weight: 500;
+}
+
+.logout-btn {
+  background: #ffffff;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+  display: flex;
+  max-width: 1400px;
+  margin: 30px auto;
+  padding: 0 20px;
+  gap: 30px;
+}
+
+/* Sidebar */
+.sidebar {
+  flex: 0 0 280px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  height: fit-content;
+  overflow: hidden;
+}
+
+.profile-summary {
+  padding: 30px 20px;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background: #0284c7;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0 auto 15px;
+}
+
+.profile-summary h3 {
+  margin: 10px 0 5px;
+  font-weight: 600;
+}
+
+.patient-id {
+  color: #64748b;
+  margin: 0;
+  font-size: 14px;
+}
+
+.nav-menu {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
-.access-requests li {
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
-}
-
-.access-requests button {
-  margin-left: 10px;
-  padding: 5px;
+.nav-menu li {
+  padding: 15px 20px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-menu li:hover {
+  background: #f1f5f9;
+}
+
+.nav-menu li.active {
+  background: #e0f2fe;
+  color: #0284c7;
+  border-left: 4px solid #0284c7;
+}
+
+.menu-icon {
+  font-size: 18px;
+}
+
+/* Main Content Area */
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.content-header h2 {
+  margin: 0;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.date-display {
+  background: #f1f5f9;
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.content-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+}
+
+/* Profile Details */
+.profile-details {
+  position: relative;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.info-label {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.edit-profile-btn {
+  margin-top: 20px;
+  background: #0284c7;
+  color: white;
   border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.access-requests button:first-child {
-  background-color: #28a745;
-  color: white;
+.edit-profile-btn:hover {
+  background: #0369a1;
 }
 
-.access-requests button:last-child {
-  background-color: #dc3545;
+/* Medical History */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #1e293b;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.medical-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.medical-record {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 8px;
+  background: #f8fafc;
+  transition: all 0.3s ease;
+}
+
+.medical-record:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.date-chip {
+  background: #e0f2fe;
+  color: #0284c7;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.record-content {
+  flex: 1;
+}
+
+.record-diagnosis {
+  margin: 0 0 8px;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.record-treatment {
+  margin: 0 0 10px;
+  color: #475569;
+}
+
+.record-doctor {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.record-actions {
+  display: flex;
+  align-items: center;
+}
+
+.view-details-btn {
+  background: transparent;
+  color: #0284c7;
+  border: 1px solid #0284c7;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-details-btn:hover {
+  background: #e0f2fe;
+}
+
+/* Empty States */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  color: #94a3b8;
+}
+
+.empty-state p {
+  margin: 0 0 5px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.empty-subtext {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.primary-btn {
+  background: #0284c7;
   color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary-btn:hover {
+  background: #0369a1;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    flex: 0 0 auto;
+  }
+  
+  .profile-summary {
+    padding: 20px;
+  }
+  
+  .avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+  
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-nav {
+    padding: 15px;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .medical-record {
+    flex-direction: column;
+  }
+  
+  .record-date {
+    margin-bottom: 10px;
+  }
+  
+  .record-actions {
+    margin-top: 15px;
+  }
+}
+
+
+/* Add these styles to PatientDashboard.css */
+
+/* Document Upload */
+/* Document Upload Section - Improved */
+.document-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Upload Type Tabs */
+.upload-type-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.upload-type-tabs button {
+  flex: 1;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: #475569;
+}
+
+.upload-type-tabs button.active {
+  background: #0284c7;
+  color: white;
+  box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+}
+
+.upload-type-tabs button:hover:not(.active) {
+  background: rgba(203, 213, 225, 0.5);
+}
+
+/* Dropzone */
+.upload-dropzone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: #f8fafc;
+  position: relative;
+}
+
+.upload-dropzone:hover, 
+.upload-dropzone.dragging {
+  border-color: #0284c7;
+  background: rgba(224, 242, 254, 0.5);
+}
+
+.upload-icon {
+  font-size: 56px;
+  margin-bottom: 15px;
+  color: #64748b;
+}
+
+.upload-dropzone p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.browse-text {
+  color: #0284c7;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.upload-hint {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 8px;
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.upload-btn {
+  display: inline-block;
+  margin-top: 20px;
+  background: #0284c7;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+}
+
+.upload-btn:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(2, 132, 199, 0.3);
+}
+
+/* Selected Files Section */
+.selected-files {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.selected-files h4 {
+  margin: 0 0 16px 0;
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.selected-files h4::before {
+  content: '📎';
+  font-size: 18px;
+}
+
+.file-count {
+  background: #e0f2fe;
+  color: #0284c7;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.file-item {
+  display: grid;
+  grid-template-columns: 3fr 2fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.file-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.file-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  background: #f1f5f9;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.file-name-container {
+  overflow: hidden;
+  flex: 1;
+}
+
+.file-name {
+  font-weight: 500;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-size {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.file-name-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.file-name-input:focus {
+  outline: none;
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.file-name-input::placeholder {
+  color: #94a3b8;
+}
+
+.remove-file-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 16px;
+  height: 32px;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.remove-file-btn:hover {
+  background: #fee2e2;
+}
+
+.upload-submit-btn {
+  display: block;
+  width: 100%;
+  background: #0284c7;
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+}
+
+.upload-submit-btn:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(2, 132, 199, 0.3);
+}
+
+/* Empty state for uploaded files */
+.no-files {
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+}
+
+/* Add disabled state for upload button */
+.upload-submit-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* File name label */
+.file-name-label {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .file-item {
+    grid-template-columns: 1fr;
+  }
+  
+  .file-info {
+    margin-bottom: 10px;
+  }
+  
+  .file-name-input {
+    margin-bottom: 10px;
+  }
 }

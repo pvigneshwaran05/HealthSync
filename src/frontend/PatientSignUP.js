@@ -45,7 +45,7 @@ export default function PatientSignUp() {
         console.log("sending data: ", patient);
         try {
             console.log("sending data: ", patient);
-            const response = await axios.post('http://localhost:8000/signup/patient', patient);
+            const response = await axios.post('http://localhost:8000/patient/signup', patient);
             console.log(response);
             console.log(response.response.data.message);
             
