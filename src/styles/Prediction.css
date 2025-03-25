@@ -1,0 +1,182 @@
+/* Prediction Page Specific Styles */
+.prediction-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .prediction-header {
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+    border-radius: 12px;
+    padding: 25px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+  }
+  
+  .prediction-header h2 {
+    margin: 0 0 10px;
+    font-size: 28px;
+    font-weight: 700;
+  }
+  
+  .prediction-header p {
+    margin: 0;
+    opacity: 0.9;
+  }
+  
+  .prediction-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  
+  .prediction-probabilities {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+  }
+  
+  .probability-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .probability-label {
+    flex: 0 0 100px;
+    font-weight: 500;
+    color: #334155;
+  }
+  
+  .probability-bar-wrapper {
+    flex: 1;
+    height: 20px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .probability-bar {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+  }
+  
+  .probability-percentage {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #1e293b;
+    font-weight: 500;
+  }
+  
+  .primary-prediction {
+    margin-top: 25px;
+    padding: 15px;
+    background: #f0f9ff;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .predicted-condition {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0284c7;
+  }
+  
+  .health-metrics {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+  }
+  
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+  
+  .health-detail-card {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .health-metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .metric-name {
+    font-weight: 500;
+    color: #334155;
+    text-transform: capitalize;
+  }
+  
+  .metric-date {
+    font-size: 12px;
+    color: #64748b;
+  }
+  
+  .metric-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0284c7;
+  }
+  
+  .prediction-insights {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+  }
+  
+  .insights-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  .insight-card {
+    display: flex;
+    gap: 15px;
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  .insight-icon {
+    font-size: 36px;
+    opacity: 0.7;
+  }
+  
+  .insight-text h4 {
+    margin: 0 0 8px;
+    color: #1e293b;
+  }
+  
+  .insight-text p {
+    margin: 0;
+    color: #64748b;
+  }
+  
+  @media (max-width: 1024px) {
+    .prediction-grid,
+    .insights-content {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  h2{
+    color: white;
+  }

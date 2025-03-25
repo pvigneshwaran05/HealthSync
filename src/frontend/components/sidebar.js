@@ -34,6 +34,7 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
     if (tab === 'details' && location.pathname === '/patient-dashboard' && activeTab === 'details') return true;
     if (tab === 'health' && location.pathname === '/patient-dashboard') return true;
     if (tab === 'history' && location.pathname === '/medical-report') return true;
+    if (tab === 'health-data' && location.pathname === '/prediction') return true;
     if (tab === 'appointments' && location.pathname === '/appointments') return true;
     if (tab === 'upload-documents' && location.pathname === '/upload-documents') return true;
     return false;
@@ -49,6 +50,7 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
       case 'details': navigate('/patient-dashboard'); break;
       case 'health': navigate('/patient-dashboard'); break;
       case 'history': navigate('/medical-report'); break;
+      case 'health-data': navigate('/prediction'); break;
       case 'appointments': navigate('/appointments'); break;
       case 'upload-documents': navigate('/upload-documents'); break;
       default: break;
@@ -102,6 +104,13 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
         >
           <span className="menu-icon">📜</span>
           {(!isCollapsed || isHovering) && <span>Medical Reports</span>}
+        </li>
+        <li
+          className={isActive('health-data') ? "active" : ""}
+          onClick={() => handleMenuClick('health-data')}
+        >
+          <span className="menu-icon">⚕️</span>
+          {(!isCollapsed || isHovering) && <span>Health Data & Predictions</span>}
         </li>
         <li
           className={isActive('appointments') ? "active" : ""}
