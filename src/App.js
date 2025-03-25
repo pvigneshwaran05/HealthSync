@@ -6,6 +6,7 @@ import DoctorLogin from "./frontend/DoctorLogin";
 import DoctorSignup from "./frontend/DoctorSignup";
 import DoctorDashboard from "./frontend/DoctorDashboard";
 import HomePage from "./frontend/HomePage";
+import DocumentUpload from "./frontend/DocumentUpload";
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                 <Route path="/doctor-signup" element={<DoctorSignup />} />
                 <Route path="/doctor-login" element={<DoctorLogin />} />
                 <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+                <Route path="/upload-documents" element={<DocumentUpload />} />
             </Routes>
         </Router>
     );
