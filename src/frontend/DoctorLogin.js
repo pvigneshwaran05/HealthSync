@@ -39,7 +39,7 @@ export default function DoctorLogin() {
     return (
         <div className="login-container">
             <div className="login-box">
-                <h2>Doctor Login</h2>
+                <h4>Doctor Login</h4>
                 <form onSubmit={handleSubmit}>
                     <label>Email:</label>
                     <input

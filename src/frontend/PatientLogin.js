@@ -41,7 +41,7 @@ export default function PatientLogin() {
     return (
         <div className="login-container">
             <div className="login-box">
-                <h2>Patient Login</h2>
+                <h4>Patient Login</h4>
                 <form onSubmit={handleSubmit}>
                     <label>Email:</label>
                     <input

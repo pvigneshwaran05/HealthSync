@@ -8,16 +8,23 @@
   padding: 2rem;
 }
 
-/* Signup box styling (same as login box) */
+/* Signup box styling */
 .signup-box {
   background: white;
-  padding: 2rem;
-  padding-right: 4rem;
+  padding: 2rem 3rem; /* Adjusted left & right padding */
   width: 100%;
-  max-width: 400px;
+  max-width: 450px; /* Increased max width for better spacing */
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   text-align: center;
+}
+
+/* Ensures responsiveness */
+@media (max-width: 500px) {
+  .signup-box {
+    padding: 2rem; /* Reduce padding on smaller screens */
+    max-width: 90%;
+  }
 }
 
 /* Signup title */

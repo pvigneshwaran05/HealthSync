@@ -50,12 +50,30 @@ const PatientHealthDataSchema = new Schema({
 });
 
 
+const BlogSchema = new Schema({
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    doctor_email: { type: String, required: true, ref: "Doctor" }, // Links to Doctor collection
+    doctor_name: { type: String, required: true }, // Added doctor name for easy retrieval
+    comments: [
+        {
+            user_email: { type: String, required: true, ref: "Patient" }, // Links to Patient collection
+            comment: { type: String, required: true },
+            created_at: { type: Date, default: Date.now }
+        }
+    ]
+}, { timestamps: true });
+
+
 const patientModel = mongoose.model('patients', Patient);
 const doctorModel = mongoose.model('doctors', Doctor);
 const PatientHealthData = mongoose.model("PatientHealthData", PatientHealthDataSchema);
+const BlogModel = mongoose.model("blogs", BlogSchema);
+
 
 module.exports = {
     patientModel: patientModel,
     doctorModel: doctorModel,
-    PatientHealthData: PatientHealthData
+    PatientHealthData: PatientHealthData,
+    BlogModel : BlogModel
 }
