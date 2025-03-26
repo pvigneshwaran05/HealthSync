@@ -37,6 +37,8 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
     if (tab === 'health-data' && location.pathname === '/prediction') return true;
     if (tab === 'appointments' && location.pathname === '/appointments') return true;
     if (tab === 'upload-documents' && location.pathname === '/upload-documents') return true;
+    if (tab === 'blogs' && location.pathname === '/Pblogs') return true;
+
     return false;
   };
   
@@ -53,6 +55,7 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
       case 'health-data': navigate('/prediction'); break;
       case 'appointments': navigate('/appointments'); break;
       case 'upload-documents': navigate('/upload-documents'); break;
+      case 'blogs': navigate('/Pblogs'); break;
       default: break;
     }
   };
@@ -131,6 +134,14 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
         >
             <span className="menu-icon">📄</span>
             {(!isCollapsed || isHovering) && <span>Upload Documents</span>}
+        </li>
+
+        <li
+          className={isActive('blogs') ? "active" : ""}
+          onClick={() => handleMenuClick('blogs')}
+        >
+          <span className="menu-icon">📝</span>
+          {(!isCollapsed || isHovering) && <span>Blogs</span>}
         </li>
       </ul>
     </aside>

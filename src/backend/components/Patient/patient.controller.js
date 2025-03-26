@@ -1,6 +1,9 @@
 const { response } = require('express');
 const {patientModel} = require('../../db')
 const {PatientHealthData} = require('../../db')
+const {BlogModel} = require('../../db')
+const {doctorModel} = require('../../db')
+const {UserClickModel} = require('../../db')
 const axios = require('axios');
 
 
@@ -235,10 +238,73 @@ const documentUpload = async(req,res) => {
     }
 };
 
+const getBlogs = async (req, res) => {
+    try {
+        const blogs = await BlogModel.find().sort({ createdAt: -1 });
+
+        // Fetch doctor details manually using email
+        const doctorEmails = blogs.map(blog => blog.doctor_email);
+        const doctors = await doctorModel.find({ email: { $in: doctorEmails } });
+
+        // Create a map of doctor emails to their details
+        const doctorMap = {};
+        doctors.forEach(doctor => {
+            doctorMap[doctor.email] = {
+                specialty: doctor.specialty,
+                hospital: doctor.hospital
+            };
+        });
+
+        // Attach doctor details to each blog
+        const blogsWithDoctorInfo = blogs.map(blog => ({
+            _id: blog._id,
+            title: blog.title,
+            content: blog.content,
+            doctor_email: blog.doctor_email,
+            doctor_name: blog.doctor_name,
+            specialty: doctorMap[blog.doctor_email]?.specialty || "Unknown",
+            hospital: doctorMap[blog.doctor_email]?.hospital || "Unknown",
+            comments: blog.comments,
+            createdAt: blog.createdAt,
+            updatedAt: blog.updatedAt
+        }));
+
+        res.status(200).json(blogsWithDoctorInfo);
+    } catch (error) {
+        console.error("Error fetching blogs:", error);
+        res.status(500).json({ error: "Server error while fetching blogs" });
+    }
+};
+
+const blogClick = async(req,res) => {
+    try {
+        const { user_email, blog_id } = req.body;
+    
+        // Create a new user click entry
+        const newUserClick = new UserClickModel({
+          user_email,
+          blog_id
+        });
+    
+        // Save the click data
+        await newUserClick.save();
+        console.log("Blog Tracked Successfully");
+    
+        res.status(200).json({ message: 'Blog click tracked successfully' });
+      } catch (error) {
+        console.error('Error tracking blog click:', error);
+        res.status(500).json({ message: 'Failed to track blog click', error: error.message });
+      }
+}
+
+
+
 module.exports = {
     patientSignup,
     patientSignin,
     patientDetails,
     documentUpload,
-    patientAllDetails
+    patientAllDetails,
+    getBlogs,
+    blogClick
 }

@@ -64,16 +64,25 @@ const BlogSchema = new Schema({
     ]
 }, { timestamps: true });
 
+const UserClickSchema = new Schema({
+    user_email: { type: String, required: true, ref: "patients" }, // Links to Patient collection
+    blog_id: { type: Schema.Types.ObjectId, required: true, ref: "blogs" }, // Links to Blog collection
+    clicked_at: { type: Date, default: Date.now } // Timestamp of the click
+});
+
 
 const patientModel = mongoose.model('patients', Patient);
 const doctorModel = mongoose.model('doctors', Doctor);
 const PatientHealthData = mongoose.model("PatientHealthData", PatientHealthDataSchema);
 const BlogModel = mongoose.model("blogs", BlogSchema);
+const UserClickModel = mongoose.model("UserClicks", UserClickSchema);
+
 
 
 module.exports = {
     patientModel: patientModel,
     doctorModel: doctorModel,
     PatientHealthData: PatientHealthData,
-    BlogModel : BlogModel
+    BlogModel : BlogModel,
+    UserClickModel: UserClickModel
 }
