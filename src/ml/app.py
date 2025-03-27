@@ -117,4 +117,3 @@ def predict_medical_condition():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
