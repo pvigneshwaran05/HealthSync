@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import "../styles/PatientDashboard.css";
-import Sidebar from "./components/sidebar"; // Adjust the path as needed
+import "../../styles/PatientDashboard.css";
+import Sidebar from "../components/patientSidebar"; // Adjust the path as needed
 
 export default function PatientDashboard() {
   const navigate = useNavigate();

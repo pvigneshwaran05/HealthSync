@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "../styles/DocumentUpload.css";
-import Sidebar from "./components/sidebar";
+import "../../styles/DocumentUpload.css";
+import Sidebar from "../components/patientSidebar";
 
 export default function DocumentUpload() {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import "../styles/PatientLogin.css"
+import "../../styles/PatientLogin.css"
 import { useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
@@ -20,13 +20,14 @@ export default function DoctorLogin() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(credential);
+        //console.log(credential);
         try {
-            const response = await axios.post("http://localhost:8000/doctor/signin", 
+            const response = await axios.post("http://localhost:8000/doctor/login", 
                 credential
             );
             if (response.status === 200) {
                 console.log(response);
+                sessionStorage.setItem("email", credential.email);
                 navigate("/doctor-dashboard")
             }
             

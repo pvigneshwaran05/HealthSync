@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import "../styles/Prediction.css";
-import Sidebar from "./components/sidebar";
+import "../../styles/Prediction.css";
+import Sidebar from "../components/patientSidebar";
 
 export default function Prediction() {
   const navigate = useNavigate();

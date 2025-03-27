@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
-import PatientSignUp from './frontend/PatientSignUP'
-import PatientLogin from "./frontend/PatientLogin";
-import PatientDashboard from "./frontend/PatientDashboard"
-import DoctorLogin from "./frontend/DoctorLogin";
-import DoctorSignup from "./frontend/DoctorSignup";
-import DoctorDashboard from "./frontend/DoctorDashboard";
+import PatientSignUp from './frontend/Patient/PatientSignUP'
+import PatientLogin from "./frontend/Patient/PatientLogin";
+import PatientDashboard from "./frontend/Patient/PatientDashboard"
+import DoctorLogin from "./frontend/Doctor/DoctorLogin";
+import DoctorSignup from "./frontend/Doctor/DoctorSignup";
+import DoctorDashboard from "./frontend/Doctor/DoctorDashboard";
 import HomePage from "./frontend/HomePage";
-import DocumentUpload from "./frontend/DocumentUpload";
-import Prediction from "./frontend/Prediction";
+import DocumentUpload from "./frontend/Patient/DocumentUpload";
+import Prediction from "./frontend/Patient/Prediction";
 
 function App() {
     return (

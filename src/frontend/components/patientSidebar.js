@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../../styles/Sidebar.css';
+import '../../styles/PatientSidebar.css';
 
 const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab, setActiveTab }) => {
   const [isCollapsed, setIsCollapsed] = useState(initialCollapsed);

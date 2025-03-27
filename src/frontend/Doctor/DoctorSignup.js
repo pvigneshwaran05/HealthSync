@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../styles/PatientSignUp.css"
+import "../../styles/PatientSignUp.css"
 
 export default function DoctorSignUp() {
     const [doctorInfo, setDoctorInfo] = useState({
@@ -24,8 +24,6 @@ export default function DoctorSignUp() {
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent form from refreshing
-        console.log("Submitting Form..."); // Check if function is called
-        console.log("Sending Data:", doctorInfo);
 
         if (doctorInfo.password !== doctorInfo.confirmPassword) {
             alert("Passwords do not match");
@@ -40,15 +38,13 @@ export default function DoctorSignUp() {
             hospital: doctorInfo.hospitalName,
             experience: doctorInfo.experience,
         }
-        console.log("sending data: ", doctor);
         try {
-            console.log("sending data: ", doctor);
             const response = await axios.post('http://localhost:8000/doctor/signup', doctor);
             console.log(response);
-            console.log(response.response.data.message);
+            console.log(response.data.message);
             
-            if(response.data.success) {
-                alert("Doctor Signed Up Successfully");
+            if(response.status === 201) {
+                alert(response.data.message);
             } else {
                 alert("Failed to Sign Up");
             }

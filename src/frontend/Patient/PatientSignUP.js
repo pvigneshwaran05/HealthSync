@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../styles/PatientSignUp.css"
+import "../../styles/PatientSignUp.css"
 
 export default function PatientSignUp() {
     const [patientInfo, setPatientInfo] = useState({
