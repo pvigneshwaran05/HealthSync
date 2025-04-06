@@ -4,6 +4,8 @@ import joblib
 import pandas as pd
 from model.NamePredictor import MedicalReportNameClassifier
 from model.extractData import extract_health_data, update_patient_data
+from model.recommendation_engine import BlogRecommendationEngine
+from pymongo import MongoClient
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -11,9 +13,28 @@ CORS(app)  # Enable CORS for frontend integration
 
 preprocessor = joblib.load("model/medical_condition_preprocessor.pkl")
 model = joblib.load("model/medical_condition_model.pkl")
+# recommendation_engine = BlogRecommendationEngine(mongo_uri="mongodb://localhost:27017/", db_name="test")
+recommendation_engine = BlogRecommendationEngine(
+    mongo_uri="mongodb+srv://admin:dkLF3xJGnS6C0DAp@cluster0.e3xkr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    db_name="test"
+)
 
-# Load the classifier
 classifier = MedicalReportNameClassifier()
+
+MONGO_URI = "mongodb+srv://admin:dkLF3xJGnS6C0DAp@cluster0.e3xkr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
+try:
+    client = MongoClient(MONGO_URI)
+    db = client.get_database("test")  # Use 'test' or your actual DB name
+    print("✅ Connected to MongoDB")
+except Exception as e:
+    print(f"❌ MongoDB Connection Error: {e}")
+
+@app.route("/")
+def home():
+    return jsonify({"message": "Flask MongoDB Connection Successful!"})
+
+
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -66,29 +87,6 @@ def process_text():
 
 @app.route('/predict_condition', methods=['POST'])
 def predict_medical_condition():
-    """
-    API Endpoint to predict medical condition based on input data.
-
-    Expected JSON input:
-    {
-        "age": 65,
-        "gender": "Male",
-        "smoking_status": "Former-Smoker",
-        "bmi": 28.5,
-        "blood_pressure": 145,
-        "glucose_levels": 120
-    }
-
-    Returns:
-    {
-        "predicted_condition": "Diabetic",
-        "probabilities": {
-            "Cancer": 0.12,
-            "Pneumonia": 0.25,
-            "Diabetic": 0.63
-        }
-    }
-    """
     try:
         # Parse input JSON data
         data = request.get_json()
@@ -113,6 +111,73 @@ def predict_medical_condition():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/patient/blog-recommendations", methods=["GET"])
+def get_blog_recommendations():
+    """Get personalized blog recommendations for a patient."""
+    user_email = request.args.get("email")
+    limit = int(request.args.get("limit", 5))
+    
+    if not user_email:
+        return jsonify({"error": "Email parameter is required"}), 400
+    
+    try:
+        recommendations = recommendation_engine.get_recommendations(user_email, limit)
+        return jsonify({"recommendations": recommendations})
+    except Exception as e:
+        print(f"Error getting recommendations: {str(e)}")
+        return jsonify({"error": "Failed to get recommendations", "message": str(e)}), 500
+
+@app.route("/patient/doctor-recommendations", methods=["GET"])
+def get_doctor_recommendations():
+    """Get doctor recommendations for a patient based on reading behavior."""
+    user_email = request.args.get("email")
+    limit = int(request.args.get("limit", 3))
+    
+    if not user_email:
+        return jsonify({"error": "Email parameter is required"}), 400
+    
+    try:
+        recommendations = recommendation_engine.get_category_recommendations(
+            user_email, "doctor", limit)
+        return jsonify({"recommendations": recommendations})
+    except Exception as e:
+        print(f"Error getting doctor recommendations: {str(e)}")
+        return jsonify({"error": "Failed to get recommendations", "message": str(e)}), 500
+
+@app.route("/patient/specialty-recommendations", methods=["GET"])
+def get_specialty_recommendations():
+    """Get specialty recommendations for a patient based on reading behavior."""
+    user_email = request.args.get("email")
+    limit = int(request.args.get("limit", 3))
+    
+    if not user_email:
+        return jsonify({"error": "Email parameter is required"}), 400
+    
+    try:
+        recommendations = recommendation_engine.get_category_recommendations(
+            user_email, "specialty", limit)
+        return jsonify({"recommendations": recommendations})
+    except Exception as e:
+        print(f"Error getting specialty recommendations: {str(e)}")
+        return jsonify({"error": "Failed to get recommendations", "message": str(e)}), 500
+
+@app.route("/patient/hospital-recommendations", methods=["GET"])
+def get_hospital_recommendations():
+    """Get hospital recommendations for a patient based on reading behavior."""
+    user_email = request.args.get("email")
+    limit = int(request.args.get("limit", 3))
+    
+    if not user_email:
+        return jsonify({"error": "Email parameter is required"}), 400
+    
+    try:
+        recommendations = recommendation_engine.get_category_recommendations(
+            user_email, "hospital", limit)
+        return jsonify({"recommendations": recommendations})
+    except Exception as e:
+        print(f"Error getting hospital recommendations: {str(e)}")
+        return jsonify({"error": "Failed to get recommendations", "message": str(e)}), 500
 
 
 if __name__ == "__main__":

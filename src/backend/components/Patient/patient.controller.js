@@ -276,26 +276,76 @@ const getBlogs = async (req, res) => {
     }
 };
 
-const blogClick = async(req,res) => {
-    try {
-        const { user_email, blog_id } = req.body;
+// const blogClick = async(req,res) => {
+//     try {
+//         const { user_email, blog_id } = req.body;
     
-        // Create a new user click entry
+//         // Create a new user click entry
+//         const newUserClick = new UserClickModel({
+//           user_email,
+//           blog_id
+//         });
+    
+//         // Save the click data
+//         await newUserClick.save();
+//         console.log("Blog Tracked Successfully");
+    
+//         res.status(200).json({ message: 'Blog click tracked successfully' });
+//       } catch (error) {
+//         console.error('Error tracking blog click:', error);
+//         res.status(500).json({ message: 'Failed to track blog click', error: error.message });
+//       }
+// }
+
+// Controller for tracking blog clicks (start time)
+const blogClick = async(req, res) => {
+    try {
+        const { user_email, blog_id, clicked_at } = req.body;
+    
+        // Create a new user click entry with start time
         const newUserClick = new UserClickModel({
           user_email,
-          blog_id
+          blog_id,
+          clicked_at: clicked_at || new Date()
         });
     
         // Save the click data
         await newUserClick.save();
-        console.log("Blog Tracked Successfully");
+        console.log("Blog Open Tracked Successfully");
     
-        res.status(200).json({ message: 'Blog click tracked successfully' });
-      } catch (error) {
+        res.status(200).json({ message: 'Blog open tracked successfully' });
+    } catch (error) {
         console.error('Error tracking blog click:', error);
         res.status(500).json({ message: 'Failed to track blog click', error: error.message });
-      }
-}
+    }
+};
+
+// Controller for tracking blog exits (end time)
+const blogExit = async(req, res) => {
+    try {
+        const { user_email, blog_id, exited_at } = req.body;
+    
+        // Find the most recent click record for this user and blog
+        const userClick = await UserClickModel.findOne({
+          user_email: user_email,
+          blog_id: blog_id,
+          exited_at: { $exists: false } // Find record without exit time
+        }).sort({ clicked_at: -1 }); // Get the most recent
+        
+        if (userClick) {
+          userClick.exited_at = exited_at || new Date();
+          await userClick.save();
+          console.log("Blog Exit Tracked Successfully");
+          res.status(200).json({ message: "Exit time tracked successfully" });
+        } else {
+          console.log("No matching click record found");
+          res.status(404).json({ message: "No matching click record found" });
+        }
+    } catch (error) {
+        console.error('Error tracking blog exit:', error);
+        res.status(500).json({ message: 'Failed to track blog exit', error: error.message });
+    }
+};
 
 
 
@@ -306,5 +356,6 @@ module.exports = {
     documentUpload,
     patientAllDetails,
     getBlogs,
-    blogClick
+    blogClick,
+    blogExit
 }

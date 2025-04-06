@@ -64,10 +64,34 @@ const BlogSchema = new Schema({
     ]
 }, { timestamps: true });
 
+
 const UserClickSchema = new Schema({
-    user_email: { type: String, required: true, ref: "patients" }, // Links to Patient collection
-    blog_id: { type: Schema.Types.ObjectId, required: true, ref: "blogs" }, // Links to Blog collection
-    clicked_at: { type: Date, default: Date.now } // Timestamp of the click
+    user_email: { type: String, required: true, ref: "patients" }, 
+    blog_id: { type: Schema.Types.ObjectId, required: true, ref: "blogs" }, 
+    clicked_at: { type: Date, default: Date.now },  // Timestamp when user clicked
+    exited_at: { type: Date } // Timestamp when user leaves the blog
+});
+
+const RecommendationSchema = new Schema({
+    user_email: { type: String, required: true, ref: "patients" },
+    blog_recommendations: [{
+        blog_id: { type: Schema.Types.ObjectId, ref: "blogs" },
+        score: { type: Number, default: 0 },
+        last_updated: { type: Date, default: Date.now }
+    }],
+    doctor_preferences: [{
+        doctor_email: { type: String, ref: "doctors" },
+        score: { type: Number, default: 0 }
+    }],
+    specialty_preferences: [{
+        specialty: { type: String },
+        score: { type: Number, default: 0 }
+    }],
+    hospital_preferences: [{
+        hospital: { type: String },
+        score: { type: Number, default: 0 }
+    }],
+    last_updated: { type: Date, default: Date.now }
 });
 
 
@@ -76,6 +100,8 @@ const doctorModel = mongoose.model('doctors', Doctor);
 const PatientHealthData = mongoose.model("PatientHealthData", PatientHealthDataSchema);
 const BlogModel = mongoose.model("blogs", BlogSchema);
 const UserClickModel = mongoose.model("UserClicks", UserClickSchema);
+const RecommendationModel = mongoose.model("Recommendations", RecommendationSchema);
+
 
 
 
@@ -84,5 +110,6 @@ module.exports = {
     doctorModel: doctorModel,
     PatientHealthData: PatientHealthData,
     BlogModel : BlogModel,
-    UserClickModel: UserClickModel
+    UserClickModel: UserClickModel,
+    RecommendationModel: RecommendationModel
 }
