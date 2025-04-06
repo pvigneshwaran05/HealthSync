@@ -6,6 +6,7 @@ from model.NamePredictor import MedicalReportNameClassifier
 from model.extractData import extract_health_data, update_patient_data
 from model.recommendation_engine import BlogRecommendationEngine
 from pymongo import MongoClient
+import datetime
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -66,21 +67,64 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# @app.route('/extractText', methods=['POST'])
+# def process_text():
+#     data = request.get_json()
+
+#     if not data or "extracted_text" not in data or "upload_date" not in data or "existing_patient_data" not in data:
+#         return jsonify({"error": "Missing required fields (extracted_text, upload_date, existing_patient_data)"}), 400
+
+#     extracted_text = data["extracted_text"]
+#     upload_date = data["upload_date"]
+#     existing_patient_data = data["existing_patient_data"]
+
+#     new_data = extract_health_data(extracted_text, upload_date)
+
+#     # Update existing data with new data
+#     updated_data = update_patient_data(existing_patient_data, new_data)
+
+#     return jsonify({"message": "Text processed successfully", "data": updated_data})
+
+
 @app.route('/extractText', methods=['POST'])
 def process_text():
     data = request.get_json()
 
-    if not data or "extracted_text" not in data or "upload_date" not in data or "existing_patient_data" not in data:
-        return jsonify({"error": "Missing required fields (extracted_text, upload_date, existing_patient_data)"}), 400
+    if not data or "extracted_text" not in data or "upload_date" not in data:
+        return jsonify({"error": "Missing required fields (extracted_text, upload_date)"}), 400
 
     extracted_text = data["extracted_text"]
-    upload_date = data["upload_date"]
-    existing_patient_data = data["existing_patient_data"]
+    # upload_date = data["upload_date"]
+    raw_upload_date = data["upload_date"]
+    try:
+        from dateutil import parser
+        upload_date = parser.parse(raw_upload_date)
+    except:
+        # Fallback to current date if parsing fails
+        upload_date = datetime.now()
+    
+    print("Formatted date:", upload_date)
+    
+    # Get existing_patient_data if provided, otherwise initialize empty dict
+    existing_patient_data = data.get("existing_patient_data", {})
+    if existing_patient_data == {}:
+        existing_patient_data = None
 
-    new_data = extract_health_data(extracted_text, upload_date)
+    # Extract data from the text
+    # new_data = extract_health_data(extracted_text, upload_date)
 
-    # Update existing data with new data
+    # for key in new_data:
+    #     if new_data[key]['value'] is not None and new_data[key]['date'] is None:
+    #         new_data[key]['date'] = upload_date
+    
+    # Debug - check what was extracted
+    # print("Extracted data:", new_data)
+    
+    # Only update if new data was found
     updated_data = update_patient_data(existing_patient_data, new_data)
+    
+    # Debug - check final result
+    # print("Updated data:", updated_data)
 
     return jsonify({"message": "Text processed successfully", "data": updated_data})
 

@@ -12,17 +12,17 @@ export default function DocumentUpload() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   const [uploadType, setUploadType] = useState("medical");
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [fileNames, setFileNames] = useState({});
-  const [fileDates, setFileDates] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [fileDate, setFileDate] = useState("");
   const [isDragging, setIsDragging] = useState(false);
 
   // Suggestion state variables
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [currentFile, setCurrentFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [filesToProcess, setFilesToProcess] = useState([]);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   // Get today's date in YYYY-MM-DD format for date input default
   const today = new Date().toISOString().split('T')[0];
@@ -35,7 +35,6 @@ export default function DocumentUpload() {
 
     const fetchPatientDetails = async () => {
       try {
-        console.log(email);
         const response = await axios.get(`http://localhost:8000/patient/details?email=${email}`);
         setPatient(response.data);
       } catch (error) {
@@ -49,147 +48,61 @@ export default function DocumentUpload() {
     fetchPatientDetails();
   }, [email, navigate]);
 
-  // Effect to process next file when a suggestion is selected
   useEffect(() => {
-    if (filesToProcess.length > 0 && !showSuggestionDialog && currentFile === null) {
-      processNextFile();
+    // Reset fields when upload succeeds
+    if (uploadSuccess) {
+      setSelectedFile(null);
+      setFileName("");
+      setFileDate(today);
+      // Reset success message after 3 seconds
+      const timer = setTimeout(() => {
+        setUploadSuccess(false);
+      }, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [filesToProcess, showSuggestionDialog, currentFile]);
+  }, [uploadSuccess, today]);
 
   const handleFileSelect = (e) => {
-    if (e.target.files) {
-      const filesArray = Array.from(e.target.files);
-      setSelectedFiles([...selectedFiles, ...filesArray]);
-
-      const newFileNames = { ...fileNames };
-      const newFileDates = { ...fileDates };
-      filesArray.forEach(file => {
-        newFileNames[file.name] = ""; // Default empty name
-        newFileDates[file.name] = today; // Default to today's date
-      });
-      setFileNames(newFileNames);
-      setFileDates(newFileDates);
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setFileDate(today);
+      // Clear any previous errors
+      setUploadError("");
     }
   };
   
   const handleFileDrop = (e) => {
     e.preventDefault();
-    if (e.dataTransfer.files) {
-      const filesArray = Array.from(e.dataTransfer.files);
-      setSelectedFiles([...selectedFiles, ...filesArray]);
-
-      const newFileNames = { ...fileNames };
-      const newFileDates = { ...fileDates };
-      filesArray.forEach(file => {
-        newFileNames[file.name] = "";
-        newFileDates[file.name] = today; // Default to today's date
-      });
-      setFileNames(newFileNames);
-      setFileDates(newFileDates);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      setSelectedFile(file);
+      setFileDate(today);
+      // Clear any previous errors
+      setUploadError("");
     }
+    setIsDragging(false);
   };
   
-  const removeFile = (index) => {
-    const newFiles = [...selectedFiles];
-    const removedFile = newFiles[index];
-    newFiles.splice(index, 1);
-    setSelectedFiles(newFiles);
-    
-    // Also clean up file names and dates
-    const newFileNames = { ...fileNames };
-    const newFileDates = { ...fileDates };
-    delete newFileNames[removedFile.name];
-    delete newFileDates[removedFile.name];
-    setFileNames(newFileNames);
-    setFileDates(newFileDates);
+  const removeFile = () => {
+    setSelectedFile(null);
+    setFileName("");
+    setFileDate(today);
+    setUploadError("");
   };
   
-  const processNextFile = async () => {
-    if (filesToProcess.length === 0) {
-      // All files processed, now upload them
-      performFileUpload();
-      return;
-    }
-
-    // Get the next file to process
-    const fileIndex = filesToProcess[0];
-    const file = selectedFiles[fileIndex];
-    
-    // Remove this file from the queue
-    setFilesToProcess(filesToProcess.slice(1));
-    
-    // Get suggestions for this file
-    try {
-      setIsLoading(true);
-      const response = await axios.post("http://localhost:5000/predict", {
-        report_name: fileNames[file.name] || file.name
-      });
-      setSuggestions(response.data.predictions || []);
-      setCurrentFile({ file: file, index: fileIndex });
-      setShowSuggestionDialog(true);
-    } catch (error) {
-      console.error("Error getting suggestions:", error);
-      alert(`Failed to get suggestions for ${file.name}. Skipping to next file.`);
-      // Process the next file
-      processNextFile();
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const uploadFiles = async () => {
-    if (selectedFiles.length === 0) return;
-    
-    // Check if any file names are empty
-    const emptyNames = Object.values(fileNames).some(name => !name.trim());
-    if (emptyNames) {
-      alert("Please provide names for all files before uploading.");
+  const getSuggestions = async () => {
+    if (!fileName.trim()) {
+      alert("Please enter a report name first to get suggestions");
       return;
     }
     
-    // Directly upload the files without showing suggestions
-    performFileUpload();
-  };
-  
-  const performFileUpload = async () => {
-    // Create FormData for the actual upload
-    const formData = new FormData();
-    selectedFiles.forEach((file, index) => {
-      formData.append("files", file);
-      formData.append("reportNames", fileNames[file.name] || "");
-      formData.append("reportDates", fileDates[file.name] || today);
-    });
-    formData.append("documentType", uploadType);
-    formData.append("patientEmail", patient.email);
-    
-    try {
-      setLoading(true);
-      const response = await axios.post(`http://localhost:8000/patient/upload-documents?patientEmail=${encodeURIComponent(patient.email)}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      });
-      
-      alert("Files uploaded successfully!");
-      setSelectedFiles([]);
-      setFileNames({});
-      setFileDates({});
-    } catch (error) {
-      console.error("Error uploading files:", error);
-      alert("Failed to upload files. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getSuggestions = async (fileName, fileIndex) => {
     try {
       setIsLoading(true);
       const response = await axios.post("http://localhost:5000/predict", {
         report_name: fileName
       });
       setSuggestions(response.data.predictions || []);
-      setCurrentFile({ file: selectedFiles[fileIndex], index: fileIndex });
       setShowSuggestionDialog(true);
     } catch (error) {
       console.error("Error getting suggestions:", error);
@@ -200,19 +113,53 @@ export default function DocumentUpload() {
   };
 
   const handleSelectSuggestion = (suggestion) => {
-    if (!currentFile || !currentFile.file) return;
-    
-    // Update the file name
-    const newFileNames = { ...fileNames };
     if (suggestion !== "other") {
-      newFileNames[currentFile.file.name] = suggestion;
+      setFileName(suggestion);
+    }
+    setShowSuggestionDialog(false);
+  };
+
+  const uploadFile = async () => {
+    if (!selectedFile) {
+      setUploadError("Please select a file to upload");
+      return;
     }
     
-    setFileNames(newFileNames);
-    setShowSuggestionDialog(false);
-    setCurrentFile(null);
+    if (!fileName.trim()) {
+      setUploadError("Please provide a name for the file");
+      return;
+    }
     
-    // The next file will be processed automatically via the useEffect
+    // Create FormData for the file upload
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("reportName", fileName);
+    formData.append("reportDate", fileDate || today);
+    formData.append("documentType", uploadType);
+    
+    try {
+      setLoading(true);
+      setUploadError("");
+      
+      const response = await axios.post(
+        `http://localhost:8000/patient/upload-document?patientEmail=${encodeURIComponent(patient.email)}`, 
+        formData, 
+        {
+          headers: { "Content-Type": "multipart/form-data" }
+        }
+      );
+      
+      setUploadSuccess(true);
+      console.log("Upload successful:", response.data);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setUploadError(
+        error.response?.data?.error || 
+        "Failed to upload file. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = () => {
@@ -279,7 +226,7 @@ export default function DocumentUpload() {
 
         <main className={`content-area ${sidebarCollapsed ? "expanded" : ""}`}>
           <div className="content-header">
-            <h2>Upload Medical Documents</h2>
+            <h2>Upload Medical Document</h2>
             <div className="date-display">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
           </div>
 
@@ -308,6 +255,18 @@ export default function DocumentUpload() {
                 </div>
               </div>
               
+              {uploadSuccess && (
+                <div className="success-message">
+                  Document uploaded successfully!
+                </div>
+              )}
+              
+              {uploadError && (
+                <div className="error-message">
+                  {uploadError}
+                </div>
+              )}
+              
               <div className="upload-area">
                 <div 
                   className={`upload-dropzone ${isDragging ? "dragging" : ""}`}
@@ -316,108 +275,93 @@ export default function DocumentUpload() {
                     setIsDragging(true);
                   }} 
                   onDragLeave={() => setIsDragging(false)}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setIsDragging(false);
-                    handleFileDrop(e);
-                  }}
+                  onDrop={(e) => handleFileDrop(e)}
                 >
                   <div className="upload-icon">📁</div>
-                  <p>Drag and drop files here or <span className="browse-text">browse</span></p>
+                  <p>Drag and drop a file here or <span className="browse-text">browse</span></p>
                   <p className="upload-hint">Supported formats: PDF, DOC, DOCX, JPG, PNG</p>
+                  <p className="upload-hint">Maximum file size: 10MB</p>
                   <input 
                     type="file" 
                     id="file-upload" 
                     className="file-input" 
                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" 
                     onChange={handleFileSelect} 
-                    multiple 
                   />
-                  <label htmlFor="file-upload" className="upload-btn">Select Files</label>
+                  <label htmlFor="file-upload" className="upload-btn">Select File</label>
                 </div>
               </div>
               
-              {selectedFiles.length > 0 ? (
+              {selectedFile ? (
                 <div className="selected-files">
-                  <h4>
-                    Selected Files
-                    <span className="file-count">{selectedFiles.length}</span>
-                  </h4>
-                  <ul className="file-list">
-                    {selectedFiles.map((file, index) => (
-                      <li key={index} className="file-item">
-                        <div className="file-info">
-                          <div className="file-icon">
-                            {file.type.includes('pdf') ? '📄' : 
-                            file.type.includes('doc') ? '📝' : '🖼️'}
-                          </div>
-                          <div className="file-name-container">
-                            <p className="file-name">{file.name}</p>
-                            <span className="file-size">({(file.size / 1024).toFixed(1)} KB)</span>
-                          </div>
-                        </div>
+                  <h4>Selected File</h4>
+                  <div className="file-item">
+                    <div className="file-info">
+                      <div className="file-icon">
+                        {selectedFile.type.includes('pdf') ? '📄' : 
+                        selectedFile.type.includes('doc') ? '📝' : '🖼️'}
+                      </div>
+                      <div className="file-name-container">
+                        <p className="file-name">{selectedFile.name}</p>
+                        <span className="file-size">({(selectedFile.size / 1024).toFixed(1)} KB)</span>
+                      </div>
+                    </div>
 
-                        <div>
-                          <div className="file-details-inputs">
-                            <div className="file-input-group">
-                              <label className="file-name-label">Report Name</label>
-                              <input
-                                type="text"
-                                placeholder="Enter report name (required)"
-                                value={fileNames[file.name] || ""}
-                                onChange={(e) => {
-                                  setFileNames({ ...fileNames, [file.name]: e.target.value });
-                                }}
-                                className="file-name-input"
-                                required
-                              />
-                              <button 
-                                className="suggest-btn"
-                                onClick={() => getSuggestions(fileNames[file.name], index)}
-                                disabled={!fileNames[file.name]}
-                              >
-                                Find Report 
-                              </button>
-                            </div>
-                            
-                            <div className="file-input-group">
-                              <label className="file-date-label">Report Date</label>
-                              <input
-                                type="date"
-                                value={fileDates[file.name] || today}
-                                onChange={(e) => {
-                                  setFileDates({ ...fileDates, [file.name]: e.target.value });
-                                }}
-                                className="file-date-input"
-                                required
-                              />
-                            </div>
-                          </div>
+                    <div>
+                      <div className="file-details-inputs">
+                        <div className="file-input-group">
+                          <label className="file-name-label">Report Name</label>
+                          <input
+                            type="text"
+                            placeholder="Enter report name (required)"
+                            value={fileName}
+                            onChange={(e) => setFileName(e.target.value)}
+                            className="file-name-input"
+                            required
+                          />
+                          <button 
+                            className="suggest-btn"
+                            onClick={getSuggestions}
+                            disabled={!fileName.trim()}
+                          >
+                            Find Report 
+                          </button>
                         </div>
+                        
+                        <div className="file-input-group">
+                          <label className="file-date-label">Report Date</label>
+                          <input
+                            type="date"
+                            value={fileDate || today}
+                            onChange={(e) => setFileDate(e.target.value)}
+                            className="file-date-input"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-                        <button 
-                          className="remove-file-btn" 
-                          onClick={() => removeFile(index)}
-                          aria-label="Remove file"
-                        >
-                          ✕
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                    <button 
+                      className="remove-file-btn" 
+                      onClick={removeFile}
+                      aria-label="Remove file"
+                    >
+                      ✕
+                    </button>
+                  </div>
                   <button 
                     className="upload-submit-btn" 
-                    onClick={uploadFiles}
-                    disabled={Object.values(fileNames).some(name => !name.trim())}
+                    onClick={uploadFile}
+                    disabled={!selectedFile || !fileName.trim() || loading}
                   >
-                    {loading ? "Uploading..." : "Upload Files"}
+                    {loading ? "Uploading..." : "Upload File"}
                   </button>
                 </div>
               ) : (
                 <div className="selected-files">
-                  <h4>Selected Files</h4>
+                  <h4>Selected File</h4>
                   <div className="no-files">
-                    <p>No files selected yet</p>
+                    <p>No file selected yet</p>
                   </div>
                 </div>
               )}

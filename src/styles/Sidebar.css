@@ -1,125 +1,224 @@
-/* Sidebar Component Styles */
+/* Enhanced Sidebar Component Styles */
 .sidebar {
-    flex: 0 0 280px;
-    transition: all 0.3s ease;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    height: fit-content;
-    overflow: hidden;
-    position: relative;
-  }
-  
-  .toggle-button-container {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    z-index: 5;
-  }
-  
-  .toggle-sidebar-btn {
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: #0284c7;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-  }
-  
-  .toggle-sidebar-btn:hover {
-    background-color: #e0f2fe;
+  flex: 0 0 280px;
+  transition: all 0.3s ease;
+  background: linear-gradient(to bottom, #ffffff, #f8fafc);
+  border-radius: 16px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+  height: calc(100vh - 40px);
+  margin: 20px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.toggle-button-container {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 5;
+}
+
+.toggle-sidebar-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #0284c7;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.toggle-sidebar-btn:hover {
+  background-color: #e0f2fe;
+  transform: rotate(90deg);
+}
+
+.sidebar.collapsed {
+  flex: 0 0 80px;
+  overflow: hidden;
+}
+
+.profile-summary {
+  padding: 30px 20px 20px;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 10px;
+}
+
+.sidebar.collapsed .profile-summary {
+  padding: 30px 10px 20px;
+}
+
+.avatar {
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  font-weight: bold;
+  margin: 0 auto 15px;
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+  border: 4px solid #f0f9ff;
+  transition: all 0.3s ease;
+}
+
+.sidebar.collapsed .avatar {
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+}
+
+.profile-summary h3 {
+  margin: 10px 0 5px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.patient-id {
+  color: #64748b;
+  margin: 0;
+  font-size: 14px;
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.nav-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.nav-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nav-menu::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+
+.nav-menu li {
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 2px 8px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.sidebar.collapsed .nav-menu li {
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.nav-menu li:hover {
+  background: #f1f5f9;
+  transform: translateX(5px);
+}
+
+.nav-menu li.active {
+  background: #e0f2fe;
+  color: #0284c7;
+  font-weight: 500;
+}
+
+.nav-menu li.active::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 65%;
+  width: 4px;
+  background: #0284c7;
+  border-radius: 0 4px 4px 0;
+}
+
+.menu-icon {
+  font-size: 20px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(241, 245, 249, 0.8);
+  border-radius: 8px;
+  padding: 6px;
+  transition: all 0.3s ease;
+}
+
+.nav-menu li.active .menu-icon {
+  background: #bfdbfe;
+  color: #0284c7;
+}
+
+.nav-menu li span:not(.menu-icon) {
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+/* Footer section for additional menu items */
+.sidebar-footer {
+  border-top: 1px solid #e2e8f0;
+  padding: 15px 0;
+  margin-top: auto;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0 16px 16px 0;
+    z-index: 100;
+    transform: translateX(0);
   }
   
   .sidebar.collapsed {
-    flex: 0 0 70px;
-    overflow: hidden;
+    transform: translateX(-100%);
   }
   
-  .profile-summary {
-    padding: 30px 20px;
-    text-align: center;
-    border-bottom: 1px solid #e2e8f0;
-  }
-  
-  .sidebar.collapsed .profile-summary {
-    padding: 20px 10px;
-  }
-  
-  .avatar {
-    width: 80px;
-    height: 80px;
-    background: #0284c7;
-    color: white;
-    border-radius: 50%;
+  .toggle-button-container {
+    right: -45px;
+    background: white;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
-    font-weight: bold;
-    margin: 0 auto 15px;
   }
   
-  .sidebar.collapsed .avatar {
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-  }
-  
-  .profile-summary h3 {
-    margin: 10px 0 5px;
-    font-weight: 600;
-  }
-  
-  .patient-id {
-    color: #64748b;
-    margin: 0;
-    font-size: 14px;
-  }
-  
-  .nav-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .nav-menu li {
-    padding: 15px 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  
-  .sidebar.collapsed .nav-menu li {
-    justify-content: center;
-    padding: 15px;
-  }
-  
-  .nav-menu li:hover {
-    background: #f1f5f9;
-  }
-  
-  .nav-menu li.active {
-    background: #e0f2fe;
+  .toggle-sidebar-btn {
     color: #0284c7;
-    border-left: 4px solid #0284c7;
   }
-  
-  .menu-icon {
-    font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 260px;
   }
-  
-  /* Media Queries for Responsiveness */
-  @media (max-width: 1024px) {
-    .sidebar {
-      flex: none;
-      width: 100%;
-    }
-  }
+}

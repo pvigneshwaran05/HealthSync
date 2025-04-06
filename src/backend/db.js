@@ -94,6 +94,57 @@ const RecommendationSchema = new Schema({
     last_updated: { type: Date, default: Date.now }
 });
 
+const DocumentSchema = new Schema({
+    patientEmail: { 
+        type: String, 
+        required: true, 
+        ref: "patients" 
+    },
+    reportName: { 
+        type: String, 
+        required: true 
+    },
+    reportType: { 
+        type: String, 
+        required: true 
+    },
+    category: { 
+        type: String, 
+        required: true 
+    },
+    fileName: { 
+        type: String, 
+        required: true 
+    },
+    fileType: { 
+        type: String, 
+        required: true 
+    },
+    fileSize: { 
+        type: Number, 
+        required: true 
+    },
+    uploadDate: { 
+        type: Date, 
+        default: Date.now 
+    },
+    reportDate: { 
+        type: Date, 
+        required: true 
+    },
+    extractedText: { 
+        type: String, 
+        default: '' 
+    },
+    filePath: { 
+        type: String, 
+        required: true 
+    }
+}, { timestamps: true });
+
+DocumentSchema.index({ patientEmail: 1, reportName: 1, reportDate: 1 }, { unique: true });
+
+
 
 const patientModel = mongoose.model('patients', Patient);
 const doctorModel = mongoose.model('doctors', Doctor);
@@ -101,6 +152,7 @@ const PatientHealthData = mongoose.model("PatientHealthData", PatientHealthDataS
 const BlogModel = mongoose.model("blogs", BlogSchema);
 const UserClickModel = mongoose.model("UserClicks", UserClickSchema);
 const RecommendationModel = mongoose.model("Recommendations", RecommendationSchema);
+const DocumentModel = mongoose.model('documents', DocumentSchema);
 
 
 
@@ -111,5 +163,6 @@ module.exports = {
     PatientHealthData: PatientHealthData,
     BlogModel : BlogModel,
     UserClickModel: UserClickModel,
-    RecommendationModel: RecommendationModel
+    RecommendationModel: RecommendationModel,
+    DocumentModel : DocumentModel
 }
