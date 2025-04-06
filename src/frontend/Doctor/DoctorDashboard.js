@@ -151,7 +151,14 @@ export default function DoctorDashboard() {
               </div>
 
               <div className="quick-actions">
-                <button className="quick-action-btn">
+                <button 
+                  className="quick-action-btn"
+                  onClick={() => {
+                    setActiveTab("blogs");
+                    // You'll need to expose this function from MedicalBlogs
+                    // Alternative approach: Use a state in DoctorDashboard to track if "writeBlog" should be active
+                  }}
+                >
                   <span>📝</span> Write Blog
                 </button>
                 <button className="quick-action-btn">

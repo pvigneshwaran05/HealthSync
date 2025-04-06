@@ -1,4 +1,4 @@
-const {doctorModel} = require('../../db')
+const {doctorModel, BlogModel} = require('../../db')
 
 // Signup for Doctors
 const doctorSignup =  async (req, res) => {
@@ -65,8 +65,68 @@ const doctorDetails = async (req, res) => {
     }
 };
 
+const allBlogs = async (req, res) => {
+    try {
+        const doctorEmail = req.params.email;
+        // Fetch patient basic details
+
+        if(!doctorEmail) {
+            const blogs = await BlogModel.find(); // Excluding sensitive fields
+            if (!blogs) {
+                return res.status(404).json({ message: "Blogs not found" });
+            }
+
+            // Construct the response in the required format
+            // const responseData = {
+            //     title: doctor.name,
+            //     email: doctor.email,
+            //     phone: doctor.phone,
+            //     speciality: doctor.specialty,
+            //     hospital: doctor.hospital,
+            //     experience: doctor.experience,
+            // };
+
+            // console.log(responseData);
+
+            return res.json(blogs);
+        }
+
+
+        const doctorBlogs = await BlogModel.find({doctor_email: doctorEmail}); // Excluding sensitive fields
+        if (!doctorBlogs) {
+            return res.status(404).json({ message: "Blogs not found" });
+        }
+        res.json(doctorBlogs);
+
+    } catch (error) {
+        console.error("Error fetching doctor details:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+const postBlogs = async (req, res) => {
+    try {
+        const blog = req.body; 
+        console.log(blog);
+
+        if (!blog) {
+            return res.status(400).json({ message: "Blog data is missing" });
+        }
+
+        const newBlog = await BlogModel.create(blog); // ✅ Mongoose way
+
+        res.status(201).json({ message: "Blog posted successfully", data: newBlog });
+    } catch (error) {
+        console.error("Error posting blog:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+
 module.exports = {
     doctorSignup,
     doctorSignin,
     doctorDetails,
+    allBlogs,
+    postBlogs
 }
