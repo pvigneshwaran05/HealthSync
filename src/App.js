@@ -8,7 +8,9 @@ import DoctorDashboard from "./frontend/Doctor/DoctorDashboard";
 import HomePage from "./frontend/HomePage";
 import DocumentUpload from "./frontend/Patient/DocumentUpload";
 import Prediction from "./frontend/Patient/Prediction";
-import Pblog from "./frontend/Patient/Prediction";
+import Pblog from "./frontend/Patient/Pblog";
+import PatientDocuments from "./frontend/Patient/PatientDocuments";
+import DocumentDetails from "./frontend/Patient/DocumentDetails";
 
 function App() {
     return (
@@ -24,6 +26,9 @@ function App() {
                 <Route path="/upload-documents" element={<DocumentUpload />} />
                 <Route path="/prediction" element={<Prediction />} />
                 <Route path="/Pblogs" element={<Pblog />}/>
+                <Route path="/medical-report" element={<PatientDocuments />} />
+                <Route path="/patient/document/:id" element={<DocumentDetails />} />
+
             </Routes>
         </Router>
     );

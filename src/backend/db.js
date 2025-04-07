@@ -64,11 +64,86 @@ const BlogSchema = new Schema({
     ]
 }, { timestamps: true });
 
+
 const UserClickSchema = new Schema({
-    user_email: { type: String, required: true, ref: "patients" }, // Links to Patient collection
-    blog_id: { type: Schema.Types.ObjectId, required: true, ref: "blogs" }, // Links to Blog collection
-    clicked_at: { type: Date, default: Date.now } // Timestamp of the click
+    user_email: { type: String, required: true, ref: "patients" }, 
+    blog_id: { type: Schema.Types.ObjectId, required: true, ref: "blogs" }, 
+    clicked_at: { type: Date, default: Date.now },  // Timestamp when user clicked
+    exited_at: { type: Date } // Timestamp when user leaves the blog
 });
+
+const RecommendationSchema = new Schema({
+    user_email: { type: String, required: true, ref: "patients" },
+    blog_recommendations: [{
+        blog_id: { type: Schema.Types.ObjectId, ref: "blogs" },
+        score: { type: Number, default: 0 },
+        last_updated: { type: Date, default: Date.now }
+    }],
+    doctor_preferences: [{
+        doctor_email: { type: String, ref: "doctors" },
+        score: { type: Number, default: 0 }
+    }],
+    specialty_preferences: [{
+        specialty: { type: String },
+        score: { type: Number, default: 0 }
+    }],
+    hospital_preferences: [{
+        hospital: { type: String },
+        score: { type: Number, default: 0 }
+    }],
+    last_updated: { type: Date, default: Date.now }
+});
+
+const DocumentSchema = new Schema({
+    patientEmail: { 
+        type: String, 
+        required: true, 
+        ref: "patients" 
+    },
+    reportName: { 
+        type: String, 
+        required: true 
+    },
+    reportType: { 
+        type: String, 
+        required: true 
+    },
+    category: { 
+        type: String, 
+        required: true 
+    },
+    fileName: { 
+        type: String, 
+        required: true 
+    },
+    fileType: { 
+        type: String, 
+        required: true 
+    },
+    fileSize: { 
+        type: Number, 
+        required: true 
+    },
+    uploadDate: { 
+        type: Date, 
+        default: Date.now 
+    },
+    reportDate: { 
+        type: Date, 
+        required: true 
+    },
+    extractedText: { 
+        type: String, 
+        default: '' 
+    },
+    filePath: { 
+        type: String, 
+        required: true 
+    }
+}, { timestamps: true });
+
+DocumentSchema.index({ patientEmail: 1, reportName: 1, reportDate: 1 }, { unique: true });
+
 
 
 const patientModel = mongoose.model('patients', Patient);
@@ -76,6 +151,9 @@ const doctorModel = mongoose.model('doctors', Doctor);
 const PatientHealthData = mongoose.model("PatientHealthData", PatientHealthDataSchema);
 const BlogModel = mongoose.model("blogs", BlogSchema);
 const UserClickModel = mongoose.model("UserClicks", UserClickSchema);
+const RecommendationModel = mongoose.model("Recommendations", RecommendationSchema);
+const DocumentModel = mongoose.model('documents', DocumentSchema);
+
 
 
 
@@ -84,5 +162,7 @@ module.exports = {
     doctorModel: doctorModel,
     PatientHealthData: PatientHealthData,
     BlogModel : BlogModel,
-    UserClickModel: UserClickModel
+    UserClickModel: UserClickModel,
+    RecommendationModel: RecommendationModel,
+    DocumentModel : DocumentModel
 }

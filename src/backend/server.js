@@ -26,6 +26,7 @@ app.use('/patient', patientRoutes);
 app.use('/doctor', doctorRoutes);
 
 
+
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 })

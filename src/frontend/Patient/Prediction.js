@@ -63,13 +63,40 @@ export default function Prediction() {
   };
 
   const renderHealthMetric = (metric, value, date) => {
+    const getIconForMetric = (metricName) => {
+      const icons = {
+        'blood pressure': '🩸',
+        'glucose': '🧪',
+        'heart rate': '❤️',
+        'weight': '⚖️',
+        'bmi': '📊',
+        'cholesterol': '📉',
+        'blood cell count': '🔬',
+        'oxygen saturation': '💨',
+        'temperature': '🌡️'
+      };
+      
+      const normalizedMetric = metricName.toLowerCase();
+      for (const [key, icon] of Object.entries(icons)) {
+        if (normalizedMetric.includes(key)) {
+          return icon;
+        }
+      }
+      return '📋';
+    };
+    
+    const metricIcon = getIconForMetric(metric);
+    
     return (
       <div className="health-detail-card">
-        <div className="health-metric-header">
-          <span className="metric-name">{metric}</span>
-          <span className="metric-date">{new Date(date).toLocaleDateString()}</span>
+        <div className="metric-icon">{metricIcon}</div>
+        <div className="health-metric-content">
+          <div className="health-metric-header">
+            <span className="metric-name">{metric}</span>
+            <span className="metric-date">{new Date(date).toLocaleDateString()}</span>
+          </div>
+          <div className="metric-value">{value}</div>
         </div>
-        <div className="metric-value">{value}</div>
       </div>
     );
   };
@@ -111,49 +138,82 @@ export default function Prediction() {
         <main className={`content-area ${sidebarCollapsed ? "expanded" : ""}`}>
           <div className="prediction-container">
             <div className="prediction-header">
-              <h2>AI Health Risk Prediction</h2>
-              <p>Comprehensive analysis of your health risks</p>
+              <h2>Health Risk Assessment</h2>
+              <p>AI-powered analysis of your personal health data</p>
             </div>
 
-            <div className="prediction-grid">
+            <div className="hub-layout">
+              {/* Center Prediction Hub */}
+              <div className="prediction-hub">
+                <div className="prediction-hub-inner">
+                  <div className="hub-title">Your Primary Risk</div>
+                  <div className="hub-condition">
+                    {model_prediction.predicted_condition}
+                  </div>
+                  <div className="hub-description">
+                    Based on comprehensive analysis of your health metrics
+                  </div>
+                  <div className="risk-level">
+                    {
+                      (() => {
+                        const highestProb = Math.max(...Object.values(model_prediction.probabilities));
+                        if (highestProb > 0.7) return "High Risk";
+                        if (highestProb > 0.4) return "Moderate Risk";
+                        return "Low Risk";
+                      })()
+                    }
+                  </div>
+                </div>
+              </div>
+              
+              {/* Health Metrics Grid */}
+              <div className="metrics-circle">
+                {Object.entries(health_data).map(([metric, {value, date}], index) => (
+                  <div className="metric-position" key={metric}>
+                    {renderHealthMetric(metric.replace(/_/g, ' '), value, date)}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="prediction-details">
               <div className="prediction-probabilities">
-                <h3>Risk Probabilities</h3>
+                <h3>Risk Probability Breakdown</h3>
                 {Object.entries(model_prediction.probabilities).map(([condition, probability]) => 
                   renderProbabilityBar(condition, probability)
                 )}
-                <div className="primary-prediction">
-                  <h4>Primary Predicted Condition</h4>
-                  <div className="predicted-condition">
-                    {model_prediction.predicted_condition}
-                  </div>
-                </div>
               </div>
 
-              <div className="health-metrics">
-                <h3>Detailed Health Metrics</h3>
-                <div className="metrics-grid">
-                  {Object.entries(health_data).map(([metric, {value, date}]) => 
-                    renderHealthMetric(metric.replace(/_/g, ' '), value, date)
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="prediction-insights">
-              <h3>Health Insights & Recommendations</h3>
-              <div className="insights-content">
-                <div className="insight-card">
-                  <span className="insight-icon">💡</span>
-                  <div className="insight-text">
-                    <h4>Early Detection</h4>
-                    <p>This AI model helps in early risk identification. Please consult your healthcare provider for a comprehensive evaluation.</p>
+              <div className="prediction-insights">
+                <h3>Health Insights & Recommendations</h3>
+                <div className="insights-content">
+                  <div className="insight-card">
+                    <span className="insight-icon">💡</span>
+                    <div className="insight-text">
+                      <h4>Early Detection</h4>
+                      <p>This AI model helps in early risk identification. Please consult your healthcare provider for a comprehensive evaluation.</p>
+                    </div>
                   </div>
-                </div>
-                <div className="insight-card">
-                  <span className="insight-icon">🩺</span>
-                  <div className="insight-text">
-                    <h4>Personalized Analysis</h4>
-                    <p>The prediction is based on your current health metrics and historical data.</p>
+                  <div className="insight-card">
+                    <span className="insight-icon">🩺</span>
+                    <div className="insight-text">
+                      <h4>Personalized Analysis</h4>
+                      <p>The prediction is based on your current health metrics and historical data.</p>
+                    </div>
+                  </div>
+                  <div className="insight-card">
+                    <span className="insight-icon">📊</span>
+                    <div className="insight-text">
+                      <h4>Risk Management</h4>
+                      <p>Regular monitoring and lifestyle adjustments can help manage and reduce your identified health risks.</p>
+                    </div>
+                  </div>
+                  <div className="insight-card">
+                    <span className="insight-icon">🔄</span>
+                    <div className="insight-text">
+                      <h4>Continuous Monitoring</h4>
+                      <p>Keep updating your health metrics for more accurate predictions and trend analysis over time.</p>
+                    </div>
                   </div>
                 </div>
               </div>
