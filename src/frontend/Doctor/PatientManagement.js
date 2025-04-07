@@ -25,11 +25,13 @@ function PatientManagement({ doctor }) {
     }
   };
 
-  const fetchPatientReport = async (patientId) => {
+  const fetchPatientReport = async (patientEmail) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`http://localhost:8000/doctor/patient/${patientId}/report`);
+      console.log(patientEmail);
+      const response = await axios.get(`http://localhost:8000/doctor/patient/${patientEmail}/report`);
+      console.log(response.data);
       setPatientReport(response.data);
     } catch (err) {
       console.error("Error fetching patient report:", err);
@@ -41,7 +43,7 @@ function PatientManagement({ doctor }) {
 
   const handleViewPatientReport = (patient) => {
     setSelectedPatient(patient);
-    fetchPatientReport(patient.id);
+    fetchPatientReport(patient.email);
   };
 
   useEffect(() => {
@@ -160,23 +162,35 @@ function PatientManagement({ doctor }) {
                   <div className="detail-grid">
                     <div className="detail-item">
                       <span className="detail-label">Patient ID</span>
-                      <span className="detail-value">{patientReport.personalInfo.id}</span>
+                      <span className="detail-value">{patientReport._id}</span>
                     </div>
                     <div className="detail-item">
                       <span className="detail-label">Full Name</span>
-                      <span className="detail-value">{patientReport.personalInfo.name}</span>
+                      <span className="detail-value">{selectedPatient.name}</span>
                     </div>
                     <div className="detail-item">
-                      <span className="detail-label">Age</span>
-                      <span className="detail-value">{patientReport.personalInfo.age}</span>
+                      <span className="detail-label">Email</span>
+                      <span className="detail-value">{patientReport.patientEmail}</span>
                     </div>
                     <div className="detail-item">
                       <span className="detail-label">Gender</span>
-                      <span className="detail-value">{patientReport.personalInfo.gender}</span>
+                      <span className="detail-value">{selectedPatient.gender}</span>
                     </div>
                     <div className="detail-item">
-                      <span className="detail-label">Contact</span>
-                      <span className="detail-value">{patientReport.personalInfo.contact}</span>
+                      <span className="detail-label">Report Name</span>
+                      <span className="detail-value">{patientReport.reportName}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="detail-label">Report Type</span>
+                      <span className="detail-value">{patientReport.reportType}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="detail-label">Category</span>
+                      <span className="detail-value">{patientReport.category}</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="detail-label">Extracted Text</span>
+                      <span className="detail-value">{patientReport.extractedText}</span>
                     </div>
                   </div>
                 </div>
@@ -184,13 +198,13 @@ function PatientManagement({ doctor }) {
                 <div className="report-section">
                   <h4>Medical History</h4>
                   <div className="medical-history">
-                    <p>{patientReport.medicalHistory.summary}</p>
+                    {/* <p>{patientReport.medicalHistory.summary}</p> */}
                     <ul className="history-list">
-                      {patientReport.medicalHistory.details.map((item, index) => (
+                      {/* {patientReport.medicalHistory.details.map((item, index) => (
                         <li key={index}>
                           <strong>{item.category}:</strong> {item.info}
                         </li>
-                      ))}
+                      ))} */}
                     </ul>
                   </div>
                 </div>
@@ -207,14 +221,14 @@ function PatientManagement({ doctor }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {patientReport.visits.map((visit, index) => (
+                      {/* {patientReport.visits.map((visit, index) => (
                         <tr key={index}>
                           <td>{visit.date}</td>
                           <td>{visit.purpose}</td>
                           <td>{visit.diagnosis}</td>
                           <td>{visit.treatment}</td>
                         </tr>
-                      ))}
+                      ))} */}
                     </tbody>
                   </table>
                 </div>
@@ -222,13 +236,13 @@ function PatientManagement({ doctor }) {
                 <div className="report-section">
                   <h4>Current Medication</h4>
                   <ul className="medication-list">
-                    {patientReport.medications.map((med, index) => (
+                    {/* {patientReport.medications.map((med, index) => (
                       <li key={index}>
                         <span className="med-name">{med.name}</span>
                         <span className="med-dosage">{med.dosage}</span>
                         <span className="med-frequency">{med.frequency}</span>
                       </li>
-                    ))}
+                    ))} */}
                   </ul>
                 </div>
                 

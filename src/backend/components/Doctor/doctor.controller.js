@@ -1,4 +1,4 @@
-const {doctorModel, BlogModel, patientModel} = require('../../db')
+const {doctorModel, BlogModel, patientModel, DocumentModel} = require('../../db')
 
 // Signup for Doctors
 const doctorSignup =  async (req, res) => {
@@ -138,11 +138,31 @@ const getPatients = async (req, res) => {
     }
 };
 
+const getPatientReport = async (req, res) => {
+    try {
+        const patientEmail = req.params.patientEmail;
+        console.log("Requested Patient Email:", patientEmail);
+
+        // Exclude fields like password, SSN, etc. using `.select()` if needed
+        const patientReport = await DocumentModel.findOne({ patientEmail: patientEmail }).select('-sensitiveField');
+
+        if (!patientReport) {
+            return res.status(404).json({ message: "Patient Report not found" });
+        }
+
+        return res.status(200).json(patientReport);
+    } catch (error) {
+        console.error("Error fetching patient report:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 module.exports = {
     doctorSignup,
     doctorSignin,
     doctorDetails,
     allBlogs,
     postBlogs,
-    getPatients
+    getPatients,
+    getPatientReport
 }

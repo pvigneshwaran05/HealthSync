@@ -8,7 +8,7 @@ router.post('/login', doctorSignin);
 router.get('/blogs/:email?', allBlogs);
 router.post('/blogs', postBlogs);
 router.get('/patients', getPatients);
-router.get('/patient/:patientId/report', getPatientReport);
+router.get('/patient/:patientEmail/report', getPatientReport);
 
 
 

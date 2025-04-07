@@ -10,12 +10,27 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
 
   // Handle sidebar expansion on hover
   useEffect(() => {
-    if (isHovering && isCollapsed) {
+    const handleResize = () => {
+      // Auto-collapse on smaller screens
+      if (window.innerWidth < 1024 && !isCollapsed) {
+        setIsCollapsed(true);
+        if (onToggleSidebar) onToggleSidebar(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    if (isHovering && isCollapsed && window.innerWidth >= 1024) {
       setIsCollapsed(false);
-    } else if (!isHovering && !isCollapsed) {
-      setIsCollapsed(true);
+    } else if (!isHovering && !isCollapsed && initialCollapsed) {
+      const timer = setTimeout(() => {
+        setIsCollapsed(true);
+      }, 300); // Delay collapse for better UX
+      return () => clearTimeout(timer);
     }
-  }, [isHovering, isCollapsed]);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isHovering, isCollapsed, initialCollapsed, onToggleSidebar]);
 
   const handleToggleSidebar = () => {
     const newCollapsedState = !isCollapsed;
@@ -60,6 +75,20 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
     }
   };
 
+  // Replace emoji icons with better icon representation (you could use a library like react-icons in a real project)
+  const getMenuIcon = (tab) => {
+    switch(tab) {
+      case 'details': return '👤';
+      case 'health': return '📊';
+      case 'history': return '📜';
+      case 'health-data': return '⚕️';
+      case 'appointments': return '📅';
+      case 'upload-documents': return '📄';
+      case 'blogs': return '📝';
+      default: return '•';
+    }
+  };
+
   return (
     <aside 
       className={`sidebar ${isCollapsed && !isHovering ? "collapsed" : ""}`}
@@ -67,7 +96,7 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
       onMouseLeave={() => setIsHovering(false)}
     >
       <div className="toggle-button-container">
-        <button className="toggle-sidebar-btn" onClick={handleToggleSidebar}>
+        <button className="toggle-sidebar-btn" onClick={handleToggleSidebar} aria-label="Toggle sidebar">
           {isCollapsed && !isHovering ? "☰" : "✕"}
         </button>
       </div>
@@ -79,7 +108,7 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
             <h3>{userInfo?.name || 'User'}</h3>
             <p className="patient-id">
               {userInfo?.email 
-                ? `Patient ID: ${userInfo.email.substring(0, 8)}` 
+                ? `ID: ${userInfo.email.substring(0, 8)}` 
                 : 'Welcome'}
             </p>
           </>
@@ -87,63 +116,35 @@ const Sidebar = ({ userInfo, onToggleSidebar, initialCollapsed = true, activeTab
       </div>
       
       <ul className="nav-menu">
-        <li
-          className={isActive('details') ? "active" : ""}
-          onClick={() => handleMenuClick('details')}
-        >
-          <span className="menu-icon">👤</span>
-          {(!isCollapsed || isHovering) && <span>Profile</span>}
-        </li>
-        <li
-          className={isActive('health') ? "active" : ""}
-          onClick={() => handleMenuClick('health')}
-        >
-          <span className="menu-icon">📊</span>
-          {(!isCollapsed || isHovering) && <span>Health Dashboard</span>}
-        </li>
-        <li
-          className={isActive('history') ? "active" : ""}
-          onClick={() => handleMenuClick('history')}
-        >
-          <span className="menu-icon">📜</span>
-          {(!isCollapsed || isHovering) && <span>Medical Reports</span>}
-        </li>
-        <li
-          className={isActive('health-data') ? "active" : ""}
-          onClick={() => handleMenuClick('health-data')}
-        >
-          <span className="menu-icon">⚕️</span>
-          {(!isCollapsed || isHovering) && <span>Health Data & Predictions</span>}
-        </li>
-        <li
-          className={isActive('appointments') ? "active" : ""}
-          onClick={() => handleMenuClick('appointments')}
-        >
-          <span className="menu-icon">📅</span>
-          {(!isCollapsed || isHovering) && <span>Appointments</span>}
-        </li>
-        {/* <li
-          onClick={() => navigate("/upload-documents")}
-        >
-          <span className="menu-icon">📄</span>
-          {(!isCollapsed || isHovering) && <span>Upload Documents</span>}
-        </li> */}
-        <li
-            className={isActive('upload-documents') ? "active" : ""}
-            onClick={() => handleMenuClick('upload-documents')}
-        >
-            <span className="menu-icon">📄</span>
-            {(!isCollapsed || isHovering) && <span>Upload Documents</span>}
-        </li>
-
-        <li
-          className={isActive('blogs') ? "active" : ""}
-          onClick={() => handleMenuClick('blogs')}
-        >
-          <span className="menu-icon">📝</span>
-          {(!isCollapsed || isHovering) && <span>Blogs</span>}
-        </li>
+        {[
+          { id: 'details', label: 'Profile' },
+          { id: 'health', label: 'Health Dashboard' },
+          { id: 'history', label: 'Medical Reports' },
+          { id: 'health-data', label: 'Health Data & Predictions' },
+          { id: 'appointments', label: 'Appointments' },
+          { id: 'upload-documents', label: 'Upload Documents' },
+          { id: 'blogs', label: 'Blogs' }
+        ].map(item => (
+          <li
+            key={item.id}
+            className={isActive(item.id) ? "active" : ""}
+            onClick={() => handleMenuClick(item.id)}
+          >
+            <span className="menu-icon">{getMenuIcon(item.id)}</span>
+            {(!isCollapsed || isHovering) && <span>{item.label}</span>}
+          </li>
+        ))}
       </ul>
+
+      <div className="sidebar-footer">
+        {(!isCollapsed || isHovering) && (
+          <div style={{ textAlign: 'center', padding: '0 20px' }}>
+            <p style={{ fontSize: '12px', color: '#94a3b8' }}>
+              © 2025 Health Dashboard
+            </p>
+          </div>
+        )}
+      </div>
     </aside>
   );
 };
