@@ -3,7 +3,8 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "../../styles/DoctorDashboard.css";
 import MedicalBlogs from "./MedicalBlogs";
-import Sidebar from "../components/doctorSidebar"; // Assuming a similar sidebar component
+import Sidebar from "../components/doctorSidebar";
+import PatientManagement from "./PatientManagement"; // Import the new component
 
 export default function DoctorDashboard() {
   const navigate = useNavigate();
@@ -128,7 +129,12 @@ export default function DoctorDashboard() {
                       </div>
                     ))}
                   </div>
-                  <button className="view-all-btn">View All Patients</button>
+                  <button 
+                    className="view-all-btn"
+                    onClick={() => setActiveTab("patients")}
+                  >
+                    View All Patients
+                  </button>
                 </div>
 
                 <div className="dashboard-card appointment-card">
@@ -153,11 +159,7 @@ export default function DoctorDashboard() {
               <div className="quick-actions">
                 <button 
                   className="quick-action-btn"
-                  onClick={() => {
-                    setActiveTab("blogs");
-                    // You'll need to expose this function from MedicalBlogs
-                    // Alternative approach: Use a state in DoctorDashboard to track if "writeBlog" should be active
-                  }}
+                  onClick={() => setActiveTab("blogs")}
                 >
                   <span>📝</span> Write Blog
                 </button>
@@ -214,11 +216,15 @@ export default function DoctorDashboard() {
             </div>
           )}
 
+          {activeTab === "patients" && (
+            <PatientManagement doctor={doctor} />
+          )}
+
           {activeTab === "blogs" && (
             <MedicalBlogs doctor={doctor} />
           )}
 
-          {/* You can add more tab contents for blogs, patients, appointments */}
+          {/* You can add more tab contents for appointments */}
         </main>
       </div>
     </div>

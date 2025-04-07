@@ -1,4 +1,4 @@
-const {doctorModel, BlogModel} = require('../../db')
+const {doctorModel, BlogModel, patientModel} = require('../../db')
 
 // Signup for Doctors
 const doctorSignup =  async (req, res) => {
@@ -122,11 +122,27 @@ const postBlogs = async (req, res) => {
     }
 };
 
+const getPatients = async (req, res) => {
+    try {
+        const patients = await patientModel.find(); // Excluding sensitive fields
+        if (!patients) {
+            return res.status(404).json({ message: "Patients not found" });
+        }
+
+
+
+        return res.json(patients);
+    } catch (error) {
+        console.error("Error posting blog:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
 
 module.exports = {
     doctorSignup,
     doctorSignin,
     doctorDetails,
     allBlogs,
-    postBlogs
+    postBlogs,
+    getPatients
 }
