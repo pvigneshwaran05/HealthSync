@@ -1,118 +1,198 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import "../../styles/MedicalBlogs.css"
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import WriteBlog from "./WriteBlog";
+import "../../styles/MedicalBlogs.css";
 
 const MedicalBlogs = ({ doctor }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-
+  const [activeView, setActiveView] = useState("allBlogs"); // allBlogs, myBlogs, writeBlog
+  const [selectedBlog, setSelectedBlog] = useState(null);
+  
   useEffect(() => {
     fetchBlogs();
-  }, [page]);
-
+  }, []);
+  
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/blogs`, {
-        params: {
-          page: page,
-          limit: 6, // 6 blogs per page
-          excludeAuthor: doctor.email // Exclude the current doctor's blogs
-        }
-      });
-
-      // If it's the first page, replace the blogs
-      // If it's a subsequent page, append the blogs
-      setBlogs(prevBlogs => 
-        page === 1 ? response.data.blogs : [...prevBlogs, ...response.data.blogs]
-      );
-
-      // Check if there are more blogs to load
-      setHasMore(response.data.blogs.length === 6);
-      setLoading(false);
+      const response = await axios.get("http://localhost:8000/doctor/blogs");
+      setBlogs(response.data);
     } catch (error) {
-      console.error('Error fetching blogs:', error);
+      console.error("Error fetching blogs:", error);
+    } finally {
       setLoading(false);
     }
   };
-
-  const loadMoreBlogs = () => {
-    setPage(prevPage => prevPage + 1);
+  
+  const fetchMyBlogs = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:8000/doctor/blogs/${doctor.email}`);
+      setBlogs(response.data);
+    } catch (error) {
+      console.error("Error fetching doctor's blogs:", error);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+  
+  const handleTabChange = (tab) => {
+    setActiveView(tab);
+    if (tab === "allBlogs") {
+      fetchBlogs();
+    } else if (tab === "myBlogs") {
+      fetchMyBlogs();
+    }
+    // For writeBlog, we just change the view
   };
-
+  
+  const handleBlogSubmission = async (blogData) => {
+    try {
+      if (selectedBlog) {
+        // Update existing blog
+        await axios.put(`http://localhost:8000/blogs/${selectedBlog._id}`, blogData);
+      } else {
+        // Create new blog
+        const res = await axios.post("http://localhost:8000/doctor/blogs", {
+          ...blogData,
+          doctor_email: doctor.email,
+          doctor_name: doctor.name,
+        });
+        if (res.data.success) {
+          alert(res.data.message);
+        }
+      }
+      
+      // Reset and fetch updated blogs
+      setSelectedBlog(null);
+      setActiveView("myBlogs");
+      fetchMyBlogs();
+    } catch (error) {
+      console.error("Error saving blog:", error);
+      alert("Failed to save blog. Please try again.");
+    }
+  };
+  
+  const handleEditBlog = (blog) => {
+    setSelectedBlog(blog);
+    setActiveView("writeBlog");
+  };
+  
+  const handleDeleteBlog = async (blogId) => {
+    if (window.confirm("Are you sure you want to delete this blog?")) {
+      try {
+        await axios.delete(`http://localhost:8000/blogs/${blogId}`);
+        // Refresh blogs list
+        if (activeView === "myBlogs") {
+          fetchMyBlogs();
+        } else {
+          fetchBlogs();
+        }
+      } catch (error) {
+        console.error("Error deleting blog:", error);
+        alert("Failed to delete blog.");
+      }
+    }
+  };
+  
   return (
     <div className="medical-blogs-container">
-      <div className="blogs-header">
-        <h2>Medical Insights & Blogs</h2>
-        <button className="create-blog-btn">
-          <span>📝</span> Write New Blog
+      <div className="blogs-nav">
+        <button 
+          className={`blog-nav-btn ${activeView === "allBlogs" ? "active" : ""}`}
+          onClick={() => handleTabChange("allBlogs")}
+        >
+          All Blogs
+        </button>
+        <button 
+          className={`blog-nav-btn ${activeView === "myBlogs" ? "active" : ""}`}
+          onClick={() => handleTabChange("myBlogs")}
+        >
+          My Blogs
+        </button>
+        <button 
+          className={`blog-nav-btn write-blog-btn ${activeView === "writeBlog" ? "active" : ""}`}
+          onClick={() => {
+            setSelectedBlog(null); // Reset selected blog when creating new
+            handleTabChange("writeBlog");
+          }}
+        >
+          <span>✏️</span> Write New Blog
         </button>
       </div>
-
-      {loading && page === 1 ? (
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading blogs...</p>
-        </div>
+      
+      {activeView === "writeBlog" ? (
+        <WriteBlog 
+          doctor={doctor}
+          existingBlog={selectedBlog} 
+          onSubmit={handleBlogSubmission}
+          onCancel={() => setActiveView(selectedBlog ? "myBlogs" : "allBlogs")}
+        />
       ) : (
-        <>
-          <div className="blogs-grid">
-            {blogs.map((blog) => (
-              <div key={blog._id} className="blog-card">
-                <div className="blog-header">
-                  <div className="blog-author-info">
-                    <div className="author-avatar">
-                      {blog.author.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+        <div className="blogs-content">
+          <h3>{activeView === "myBlogs" ? "My Medical Blogs" : "All Medical Blogs"}</h3>
+          
+          {loading ? (
+            <div className="blogs-loading">
+              <div className="loading-spinner"></div>
+              <p>Loading blogs...</p>
+            </div>
+          ) : blogs.length === 0 ? (
+            <div className="no-blogs-message">
+              <p>No blogs found. {activeView === "myBlogs" && "Start by writing your first medical blog!"}</p>
+              {activeView === "myBlogs" && (
+                <button 
+                  className="start-writing-btn"
+                  onClick={() => handleTabChange("writeBlog")}
+                >
+                  Start Writing
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="blogs-grid">
+              {blogs.map(blog => (
+                <div key={blog._id} className="blog-card">
+                  <div className="blog-header">
+                    <h4>{blog.title}</h4>
+                    <span className="blog-category">{blog.category}</span>
+                  </div>
+                  <div className="blog-preview">
+                    {blog.content}
+                  </div>
+                  <div className="blog-footer">
+                    <div className="blog-author">
+                      <span className="author-name">{blog.doctor_name}</span>
+                      <span className="author-specialty">{blog.doctor_email}</span>
                     </div>
-                    <div className="author-details">
-                      <h4>{blog.author.name}</h4>
-                      <p>{blog.author.speciality}</p>
+                    <div className="blog-date">
+                      {new Date(blog.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <span className="blog-date">{formatDate(blog.createdAt)}</span>
-                </div>
-                <div className="blog-content">
-                  <h3>{blog.title}</h3>
-                  <p>{blog.summary}</p>
-                </div>
-                <div className="blog-footer">
-                  <button className="read-more-btn">Read Full Article</button>
-                  <div className="blog-stats">
-                    <span>👀 {blog.views || 0} Views</span>
-                    <span>💬 {blog.comments || 0} Comments</span>
+                  <div className="blog-actions">
+                    {/* <button className="blog-action-btn view-btn">Read More</button> */}
+                    {activeView === "myBlogs" && (
+                      <>
+                        <button 
+                          className="blog-action-btn edit-btn"
+                          onClick={() => handleEditBlog(blog)}
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          className="blog-action-btn delete-btn"
+                          onClick={() => handleDeleteBlog(blog._id)}
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {hasMore && (
-            <div className="load-more-container">
-              <button 
-                className="load-more-btn" 
-                onClick={loadMoreBlogs}
-                disabled={loading}
-              >
-                {loading ? 'Loading...' : 'Load More Blogs'}
-              </button>
+              ))}
             </div>
           )}
-        </>
-      )}
-
-      {!loading && blogs.length === 0 && (
-        <div className="no-blogs-message">
-          <p>No medical blogs available at the moment.</p>
         </div>
       )}
     </div>
